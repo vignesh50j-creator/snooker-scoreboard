@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snooker Scoreboard Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@400;700;900&display=swap');
+        
+        body { font-family: 'Inter', sans-serif; background-color: #0f172a; }
+        .digital { font-family: 'Orbitron', sans-serif; }
+        
+        .ball { 
+            width: 50px; height: 50px; border-radius: 50%; 
+            transition: transform 0.1s, filter 0.2s;
+            box-shadow: inset -5px -5px 10px rgba(0,0,0,0.4), 2px 2px 5px rgba(0,0,0,0.3);
+        }
+        .ball:active { transform: scale(0.9); }
+        .ball-1 { background: radial-gradient(circle at 30% 30%, #ff4d4d, #800000); } /* Red */
+        .ball-2 { background: radial-gradient(circle at 30% 30%, #ffff4d, #8a8a00); } /* Yellow */
+        .ball-3 { background: radial-gradient(circle at 30% 30%, #4dff4d, #006400); } /* Green */
+        .ball-4 { background: radial-gradient(circle at 30% 30%, #a56b46, #4b2c20); } /* Brown */
+        .ball-5 { background: radial-gradient(circle at 30% 30%, #4d4dff, #000080); } /* Blue */
+        .ball-6 { background: radial-gradient(circle at 30% 30%, #ff80bf, #99004d); } /* Pink */
+        .ball-7 { background: radial-gradient(circle at 30% 30%, #444, #000); }    /* Black */
+
+        .active-glow { 
+            box-shadow: 0 0 20px rgba(251, 191, 36, 0.4);
+            border: 2px solid #fbbf24;
+        }
+    </style>
+</head>
+<body class="text-slate-100 p-2 sm:p-6">
+
+    <div class="max-w-5xl mx-auto">
+        <div class="bg-slate-800 rounded-3xl p-4 sm:p-8 shadow-2xl border border-slate-700 mb-6">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-8">
+                
+                <div id="p1-card" class="flex-1 w-full text-center p-6 rounded-2xl transition-all active-glow">
+                    <h2 id="p1-name-label" class="text-xl font-bold text-slate-400 uppercase tracking-tighter">Player 1</h2>
+                    <div id="p1-score" class="text-8xl font-black digital text-white my-2">0</div>
+                    <div class="flex justify-center gap-2" id="p1-frames-dots">
+                        </div>
+                </div>
+
+                <div class="flex flex-col items-center px-4 border-x border-slate-700">
+                    <div class="text-slate-500 text-xs font-bold uppercase tracking-widest">Points Left</div>
+                    <div id="pts-left" class="text-3xl font-bold text-green-500 digital">147</div>
+                    <div class="mt-4 py-1 px-4 bg-slate-900 rounded-full text-yellow-500 text-sm font-bold border border-yellow-500/30">
+                        BREAK: <span id="current-break">0</span>
+                    </div>
+                </div>
+
+                <div id="p2-card" class="flex-1 w-full text-center p-6 rounded-2xl transition-all">
+                    <h2 id="p2-name-label" class="text-xl font-bold text-slate-400 uppercase tracking-tighter">Player 2</h2>
+                    <div id="p2-score" class="text-8xl font-black digital text-white my-2">0</div>
+                    <div class="flex justify-center gap-2" id="p2-frames-dots"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <div class="lg:col-span-2 bg-slate-800 p-6 rounded-3xl border border-slate-700 shadow-xl">
+                <div class="flex flex-wrap justify-center gap-6 mb-8">
+                    <div class="flex flex-col items-center gap-2">
+                        <button onclick="handlePot(1)" class="ball ball-1"></button>
+                        <span class="text-xs font-bold text-slate-500">RED</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-2">
+                        <button onclick="handlePot(2)" class="ball ball-2"></button>
+                        <span class="text-xs font-bold text-slate-500">2</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-2">
+                        <button onclick="handlePot(3)" class="ball ball-3"></button>
+                        <span class="text-xs font-bold text-slate-500">3</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-2">
+                        <button onclick="handlePot(4)" class="ball ball-4"></button>
+                        <span class="text-xs font-bold text-slate-500">4</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-2">
+                        <button onclick="handlePot(5)" class="ball ball-5"></button>
+                        <span class="text-xs font-bold text-slate-500">5</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-2">
+                        <button onclick="handlePot(6)" class="ball ball-6"></button>
+                        <span class="text-xs font-bold text-slate-500">6</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-2">
+                        <button onclick="handlePot(7)" class="ball ball-7"></button>
+                        <span class="text-xs font-bold text-slate-500">7</span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <button onclick="handleFoul()" class="bg-red-500/20 hover:bg-red-500 text-red-500 hover:text-white border border-red-500/50 py-3 rounded-xl font-bold transition">FOUL</button>
+                    <button onclick="switchTurn()" class="bg-blue-600 hover:bg-blue-500 py-3 rounded-xl font-bold transition shadow-lg">END TURN</button>
+                    <button onclick="undo()" class="bg-slate-700 hover:bg-slate-600 py-3 rounded-xl font-bold transition">UNDO</button>
+                    <button onclick="endFrame()" class="bg-emerald-600 hover:bg-emerald-500 py-3 rounded-xl font-bold transition">FRAME OVER</button>
+                </div>
+            </div>
+
+            <div class="bg-slate-800 p-6 rounded-3xl border border-slate-700 shadow-xl flex flex-col">
+                <div class="mb-4">
+                    <h3 class="text-sm font-bold text-slate-500 uppercase mb-3">Settings</h3>
+                    <div class="space-y-2">
+                        <input id="p1-name" onchange="updateNames()" type="text" placeholder="Player 1" class="w-full bg-slate-900 border border-slate-700 p-2 rounded-lg outline-none focus:border-yellow-500 transition">
+                        <input id="p2-name" onchange="updateNames()" type="text" placeholder="Player 2" class="w-full bg-slate-900 border border-slate-700 p-2 rounded-lg outline-none focus:border-yellow-500 transition">
+                        <div class="flex gap-2 items-center text-sm mt-2">
+                            <span>Reds:</span>
+                            <input id="reds-count" type="number" value="15" class="w-16 bg-slate-900 border border-slate-700 p-1 rounded text-center">
+                            <button onclick="resetMatch()" class="ml-auto text-red-400 text-xs font-bold hover:underline">RESET ALL</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex-1">
+                    <h3 class="text-sm font-bold text-slate-500 uppercase mb-2">Pot Log</h3>
+                    <div id="pot-log" class="bg-slate-900 rounded-lg p-3 h-32 overflow-y-auto text-xs font-mono text-slate-400">
+                        Match started.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let state = {
+            p1: { name: "Player 1", score: 0, frames: 0 },
+            p2: { name: "Player 2", score: 0, frames: 0 },
+            active: 1,
+            break: 0,
+            reds: 15,
+            history: []
+        };
+
+        function save() {
+            state.history.push(JSON.stringify({...state, history: []}));
+            if (state.history.length > 20) state.history.shift();
+            render();
+        }
+
+        function handlePot(val) {
+            save();
+            state[`p${state.active}`].score += val;
+            state.break += val;
+            if (val === 1 && state.reds > 0) state.reds--;
+            log(`P${state.active} potted ${val}`);
+            render();
+        }
+
+        function handleFoul() {
+            const val = parseInt(prompt("Foul points (4-7)?", "4")) || 4;
+            save();
+            const other = state.active === 1 ? 2 : 1;
+            state[`p${other}`].score += val;
+            log(`P${state.active} FOUL (+${val} to P${other})`);
+            switchTurn(false);
+        }
+
+        function switchTurn(shouldSave = true) {
+            if (shouldSave) save();
+            state.active = state.active === 1 ? 2 : 1;
+            state.break = 0;
+            render();
+        }
+
+        function undo() {
+            if (state.history.length > 0) {
+                const prev = JSON.parse(state.history.pop());
+                const currentHistory = state.history;
+                state = prev;
+                state.history = currentHistory;
+                render();
+            }
+        }
+
+        function endFrame() {
+            if (!confirm("End this frame?")) return;
+            save();
+            if (state.p1.score > state.p2.score) state.p1.frames++;
+            else if (state.p2.score > state.p1.score) state.p2.frames++;
+            
+            state.p1.score = 0;
+            state.p2.score = 0;
+            state.break = 0;
+            state.reds = parseInt(document.getElementById('reds-count').value) || 15;
+            log("Frame Ended");
+            render();
+        }
+
+        function updateNames() {
+            state.p1.name = document.getElementById('p1-name').value || "Player 1";
+            state.p2.name = document.getElementById('p2-name').value || "Player 2";
+            render();
+        }
+
+        function log(msg) {
+            const el = document.getElementById('pot-log');
+            el.innerHTML = `<div>> ${msg}</div>` + el.innerHTML;
+        }
+
+        function render() {
+            document.getElementById('p1-score').innerText = state.p1.score;
+            document.getElementById('p2-score').innerText = state.p2.score;
+            document.getElementById('p1-name-label').innerText = state.p1.name;
+            document.getElementById('p2-name-label').innerText = state.p2.name;
+            document.getElementById('current-break').innerText = state.break;
+            
+            // Points remaining calc
+            const rem = state.reds > 0 ? (state.reds * 8) + 27 : 27;
+            document.getElementById('pts-left').innerText = rem;
+
+            // Highlight active player
+            document.getElementById('p1-card').className = `flex-1 w-full text-center p-6 rounded-2xl transition-all ${state.active === 1 ? 'active-glow bg-slate-700/50' : 'opacity-40'}`;
+            document.getElementById('p2-card').className = `flex-1 w-full text-center p-6 rounded-2xl transition-all ${state.active === 2 ? 'active-glow bg-slate-700/50' : 'opacity-40'}`;
+
+            // Frames dots
+            renderDots('p1-frames-dots', state.p1.frames);
+            renderDots('p2-frames-dots', state.p2.frames);
+        }
+
+        function renderDots(id, count) {
+            const el = document.getElementById(id);
+            el.innerHTML = '';
+            for(let i=0; i<count; i++) {
+                const dot = document.createElement('div');
+                dot.className = "w-3 h-3 rounded-full bg-yellow-500 shadow-[0_0_8px_rgba(245,158,11,0.6)]";
+                el.appendChild(dot);
+            }
+        }
+
+        function resetMatch() {
+            if(confirm("Full Reset?")) location.reload();
+        }
+
+        render();
+    </script>
+</body>
+</html>
